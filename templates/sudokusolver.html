@@ -8,8 +8,7 @@
 		<style>
 			body {
 				font-family: Arial, sans-serif;
-				margin: 0;
-				padding: 0;
+				
 				background-color: #f8f9fa;
 				color: #333;
 				display: flex;
@@ -134,31 +133,46 @@
 				margin-top: 10px;
 			}
 			nav {
-				width: 100%;
-				background-color: #343a40; /* Dark background color */
-				padding: 10px;
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-				position: fixed; /* Fixed position at the top */
-				top: 0;
-				z-index: 1000; /* Ensure it stays on top of other content */
-			}
+  background-color: #04162e; /* Dark blue background color */
+  padding: 10px 20px; /* Adjusted padding for better spacing */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Space between logo and button */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Enhanced shadow for depth */
+  position: fixed; /* Fixed position at the top */
+  top: 0;
+  width: 100%; /* Ensures navbar spans the full width */
+  z-index: 1000; /* Ensures navbar stays on top of other content */
+}
 
-			nav img {
-				height: 40px; /* Adjust size of the logo */
-				border-radius: 50%; /* Make the logo round */
-			}
+nav img {
+  height: 50px; /* Slightly larger logo */
+  border-radius: 50%; /* Makes the logo round */
+  transition: transform 0.3s ease-in-out; /* Smooth scaling effect on hover */
+}
 
-			nav a {
-				color: white; /* White text color */
-				text-decoration: none; /* Remove underline */
-				padding: 10px;
-				background-color: #007bff; /* Blue background color for the button */
-				border-radius: 5px; /* Rounded corners for the button */
-				margin-left: 20px; /* Space between the logo and the button */
-			}
+nav img:hover {
+  transform: scale(1.1); /* Scale up logo on hover for interactivity */
+}
+
+nav a {
+  color: white; /* White text color */
+  text-decoration: none; /* Remove underline */
+  padding: 12px 20px; /* Increased padding for a more balanced look */
+  background-color: #28a745; /* Green background color for the button */
+  border-radius: 5px; /* Rounded corners for the button */
+  margin-right: 25px; /* Space between the logo and the button */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover effect */
+}
+
+nav a:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: translateY(-2px); /* Lift effect on hover */
+}
+
+nav a:active {
+  background-color: #1e7e34; /* Even darker green when button is pressed */
+}
 		</style>
 	</head>
 	<body>
