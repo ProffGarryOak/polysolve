@@ -1,11 +1,4 @@
-<<<<<<< HEAD
 Flask
 numpy
 plotly
 
-=======
-Flask
-numpy
-plotly
-
->>>>>>> master
