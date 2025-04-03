@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Polynomial Operations | PolySolver</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #05c298;
+            --primary-dark: #038f6e;
+            --secondary: #04162e;
+            --light-bg: #f5fbf9;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --dark-gray: #343a40;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+
+        .topbar {
+            background-color: var(--secondary);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topnav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-text {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .homephoto {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: var(--transition);
+            object-fit: contain;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .homephoto:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(5, 194, 152, 0.5);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .logokiphoto {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 5rem 1rem;
+            background: linear-gradient(135deg, var(--secondary) 0%, #0a2a5a 100%);
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2305c298' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--primary), #4df1d0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2.5rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background-color: var(--primary);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(5, 194, 152, 0.3);
+            border: 2px solid transparent;
+        }
+
+        .cta-button:hover {
+            background-color: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 194, 152, 0.4);
+        }
+
+        .tools-container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 1rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            justify-items: center;
+        }
+
+        .tool-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+		.hi{
+			margin-top:5rem;
+			background:#fff;
+		}
+        .tool-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            width: 250px;
+        }
+
+        .tool-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .tool-card:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .tool-icon {
+            width: 100%;
+            height: 180px;
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: var(--secondary);
+            transition: var(--transition);
+        }
+
+        .tool-card:hover .tool-icon {
+            background-size: 65%;
+        }
+
+        .tool-label {
+            padding: 1.5rem;
+            font-weight: 600;
+            color: var(--secondary);
+            background-color: var(--white);
+            font-size: 1.1rem;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            padding: 3rem 2rem;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section:nth-child(even) {
+            background: linear-gradient(135deg, #fff 0%, #e0f5ef 100%);
+        }
+		.section:nth-child(odd) {
+            background: linear-gradient(135deg, #fff 0%, #e0f5ef 100%);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: var(--secondary);
+            position: relative;
+            padding-bottom: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .features-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            flex: 1 1 300px;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+        }
+
+        .feature-desc {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .benefit-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+            border-top: 4px solid var(--primary);
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .benefit-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .benefit-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .footer {
+            background-color: var(--secondary);
+            color: var(--white);
+            padding: 2.5rem 1rem;
+            text-align: center;
+            margin-top: 4rem;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), #4df1d0);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .footer-logo span {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .footer-links a {
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+            opacity: 0.8;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        .copyright {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .tool-card {
+                width: 200px;
+            }
+            
+            .section {
+                padding: 2rem 1.5rem;
+            }
+            
+            .feature-card {
+                flex: 1 1 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topnav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+            
+            .tool-card {
+                width: 160px;
+            }
+            
+            .tool-icon {
+                height: 140px;
+            }
+            
+            .tool-label {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="topnav">
+           
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="logo" class="logokiphoto" />
+                <h1 class="logo-text">PolySolver</h1>
+            </div>
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Advanced Polynomial Mathematics Made Simple</h1>
+            <p>Perform complex polynomial operations, visualize graphs, find roots, and more with our powerful yet intuitive mathematical toolkit designed for students, educators, and professionals.</p>
+            <a href="#tools" class="cta-button">Explore Tools</a>
+        </div>
+    </section>
+
+    <div class="tools-container" id="tools">
+        <h2 class="section-title">Mathematical Toolkit</h2>
+        
+        <!-- First Row - 4 items -->
+        <div class="tool-row">
+            <a href="/addition" class="tool-card">
+                <div class="tool-icon" style="background-image: url('{{ url_for('static', filename='add.png') }}');"></div>
+                <div class="tool-label">Polynomial Addition</div>
+            </a>
+            <a href="/subtraction" class="tool-card">
+                <div class="tool-icon" style="background-image: url('{{ url_for('static', filename='sub.png') }}');"></div>
+                <div class="tool-label">Polynomial Subtraction</div>
+            </a>
+            <a href="/multiplication" class="tool-card">
+                <div class="tool-icon" style="background-image: url('{{ url_for('static', filename='multiply.png') }}');"></div>
+                <div class="tool-label">Polynomial Multiplication</div>
+            </a>
+            <a href="/division" class="tool-card">
+                <div class="tool-icon" style="background-image: url('{{ url_for('static', filename='divide.png') }}');"></div>
+                <div class="tool-label">Polynomial Division</div>
+            </a>
+        </div>
+        
+        <!-- Second Row - 3 items -->
+        <div class="tool-row">
+            <a href="/find_root" class="tool-card">
+                <div class="tool-icon" style="background-image: url('{{ url_for('static', filename='root.png') }}');"></div>
+                <div class="tool-label">Find Root</div>
+            </a>
+            <a href="/plot_graph" class="tool-card">
+                <div class="tool-icon" style="background-image: url('{{ url_for('static', filename='graph.png') }}');"></div>
+                <div class="tool-label">Graph Plotter</div>
+            </a>
+            <a href="/sort" class="tool-card">
+                <div class="tool-icon" style="background-image: url('{{ url_for('static', filename='sort.png') }}');"></div>
+                <div class="tool-label">Sorting Visualizer</div>
+            </a>
+        </div>
+        </div>
+		<div class="tools-container" id="tools">
+			<h2 class="section-title">Fun Toolkit</h2>
+        <!-- Third Row - 4 items -->
+        <div class="tool-row">
+            <a href="/split" class="tool-card">
+                <div class="tool-icon" style="background-image: url('{{ url_for('static', filename='split.png') }}');"></div>
+                <div class="tool-label">Money Split</div>
+            </a>
+            <a href="/sudoku" class="tool-card">
+                <div class="tool-icon" style="background-image: url('{{ url_for('static', filename='sudoku.png') }}');"></div>
+                <div class="tool-label">Sudoku Solver</div>
+            </a>
+            <a href="/tictactoe" class="tool-card">
+                <div class="tool-icon" style="background-image: url('{{ url_for('static', filename='tictactoe.png') }}');"></div>
+                <div class="tool-label">Quantun Tic Tac Toe</div>
+            </a>
+			
+				<a href="/wordle" class="tool-card">
+					<div class="tool-icon" style="background-image: url('{{ url_for('static', filename='wordle.png') }}');"></div>
+					<div class="tool-label">Quantum Wordle </div>
+				</a>
+			</div>
+       </div>
+
+    <div class="section-container">
+        <section class="section" id="features">
+            <h2 class="section-title">Powerful Features</h2>
+            <div class="features-container">
+                <div class="feature-card">
+                    <div class="feature-icon">🧮</div>
+                    <h3 class="feature-title">Comprehensive Operations</h3>
+                    <p class="feature-desc">Perform all fundamental polynomial operations including addition, subtraction, multiplication, and division with intuitive interfaces and step-by-step solutions.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3 class="feature-title">Root Finding</h3>
+                    <p class="feature-desc">Accurately determine real and complex roots of polynomial equations up to 10th degree using advanced numerical methods.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Graph Visualization</h3>
+                    <p class="feature-desc">Plot polynomial functions with customizable domains and visual styles to analyze behavior and key characteristics.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">High Performance</h3>
+                    <p class="feature-desc">Optimized algorithms deliver instant results even for complex high-degree polynomial operations.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Responsive Design</h3>
+                    <p class="feature-desc">Fully accessible on all devices from desktops to smartphones with touch-optimized interfaces.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3 class="feature-title">Educational Focus</h3>
+                    <p class="feature-desc">Detailed explanations and visualizations help students understand polynomial concepts and solution methods.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section hi">
+            <h2 class="section-title">Who Benefits Most?</h2>
+            <div class="benefits-grid hihi">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎓</div>
+                    <h3 class="benefit-title">Students</h3>
+                    <p>Master polynomial concepts with interactive tools and visualizations that make abstract mathematics concrete and understandable.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">👩‍🏫</div>
+                    <h3 class="benefit-title">Educators</h3>
+                    <p>Demonstrate mathematical principles with clear, dynamic examples that engage students and enhance classroom teaching.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">👨‍💻</div>
+                    <h3 class="benefit-title">Engineers</h3>
+                    <p>Quickly solve polynomial equations encountered in technical work with reliable, precise computational tools.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔬</div>
+                    <h3 class="benefit-title">Researchers</h3>
+                    <p>Analyze polynomial behavior and roots with precision tools that handle complex equations effortlessly.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🧮</div>
+                    <h3 class="benefit-title">Math Enthusiasts</h3>
+                    <p>Explore the beauty of polynomial mathematics through interactive visualization and exploration tools.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">👨‍💼</div>
+                    <h3 class="benefit-title">Professionals</h3>
+                    <p>Solve real-world problems involving polynomials in finance, physics, engineering, and data science.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="PolySolver Logo">
+                <span>PolySolver</span>
+            </div>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="#tools">Tools</a>
+                <a href="#features">Features</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="copyright">
+                &copy; 2024 PolySolver | Advanced Polynomial Calculator
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

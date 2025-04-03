@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Polynomial Multiplication | PolySolver</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #05c298;
+            --primary-dark: #038f6e;
+            --secondary: #04162e;
+            --light-bg: #f5fbf9;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --dark-gray: #343a40;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--secondary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background-color: var(--secondary);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topnav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-text {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .homephoto {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: var(--transition);
+            object-fit: contain;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .homephoto:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(5, 194, 152, 0.5);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .logokiphoto {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .calculator {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        .calculator-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(5, 194, 152, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: var(--gray);
+            opacity: 0.6;
+        }
+
+        .solve-button {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .solve-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(5, 194, 152, 0.3);
+        }
+
+        .result-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f0faf7;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .result-title {
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .result-value {
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: var(--dark-gray);
+            word-break: break-all;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .guide {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .guide-title {
+            color: var(--secondary);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .guide-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .guide-text {
+            color: var(--dark-gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .steps-list {
+            list-style-type: none;
+            counter-reset: step-counter;
+        }
+
+        .step-item {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-item::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--primary);
+            color: var(--white);
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .step-desc {
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .example-content {
+            font-family: monospace;
+            color: var(--dark-gray);
+            white-space: pre-wrap;
+        }
+
+        .footer {
+            background-color: var(--secondary);
+            color: var(--white);
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .copyright {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .calculator {
+                padding: 1.5rem;
+            }
+            
+            .guide {
+                padding: 1.5rem;
+            }
+            
+            .calculator-title {
+                font-size: 1.5rem;
+            }
+            
+            .guide-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topnav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .logo-text {
+                font-size: 1.3rem;
+            }
+            
+            .calculator {
+                padding: 1.25rem;
+            }
+            
+            .step-item {
+                padding-left: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="topnav">
+            
+          <div class="logo-container">
+            <a href="/"><img src="{{ url_for('static', filename='logo.png') }}" alt="logo" class="logokiphoto" /></a>
+            <h1 class="logo-text">Polynomial Multiplication</h1>
+        </div>
+            
+                
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="calculator">
+            <h1 class="calculator-title">Polynomial Multiplication Calculator</h1>
+            <form method="post" action="/multiplication">
+                <div class="form-group">
+                    <label for="poly1" class="form-label">Enter coefficients of polynomial 1:</label>
+                    <input
+                        type="text"
+                        id="poly1"
+                        name="poly1"
+                        class="form-input"
+                        placeholder="Example: 2, -1, 3, 0, 5"
+                        required
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="poly2" class="form-label">Enter coefficients of polynomial 2:</label>
+                    <input
+                        type="text"
+                        id="poly2"
+                        name="poly2"
+                        class="form-input"
+                        placeholder="Example: 1, 4, 0, 2"
+                        required
+                    />
+                </div>
+                <button type="submit" class="solve-button">Multiply Polynomials</button>
+            </form>
+
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+
+            {% if result %}
+            <div class="result-container">
+                <h3 class="result-title">Multiplication Result:</h3>
+                <p class="result-value"><strong>Polynomial 1:</strong> {{ poly1 }}</p>
+                <p class="result-value"><strong>Polynomial 2:</strong> {{ poly2 }}</p>
+                <p class="result-value"><strong>Product:</strong> {{ result }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="guide">
+            <h2 class="guide-title">How to Multiply Polynomials</h2>
+            <p class="guide-text">
+                Multiplying polynomials involves distributing each term of one polynomial across every term 
+                of the other polynomial (the FOIL method for binomials) and then combining like terms. 
+                Here's the step-by-step process:
+            </p>
+
+            <ol class="steps-list">
+                <li class="step-item">
+                    <h3 class="step-title">Distribute Each Term</h3>
+                    <p class="step-desc">
+                        Multiply each term in the first polynomial by every term in the second polynomial.
+                        This is often called the "FOIL" method when multiplying two binomials.
+                    </p>
+                </li>
+                <li class="step-item">
+                    <h3 class="step-title">Multiply Coefficients and Add Exponents</h3>
+                    <p class="step-desc">
+                        For each pair of terms multiplied together, multiply their coefficients and add their exponents.
+                        For example: (3x²)(5x³) = 15x⁵.
+                    </p>
+                </li>
+                <li class="step-item">
+                    <h3 class="step-title">Combine Like Terms</h3>
+                    <p class="step-desc">
+                        After multiplying all terms, combine terms that have the same variable raised to the same power.
+                        Add their coefficients to simplify the expression.
+                    </p>
+                </li>
+                <li class="step-item">
+                    <h3 class="step-title">Arrange in Standard Form</h3>
+                    <p class="step-desc">
+                        Write the final polynomial in standard form, ordered from the highest degree term to the lowest.
+                    </p>
+                </li>
+            </ol>
+
+            <div class="example-box">
+                <h3 class="example-title">Example:</h3>
+                <div class="example-content">
+(2x² + 3x + 1) × (x - 4)
+
+Step 1: Distribute each term
+= 2x²(x) + 2x²(-4) + 3x(x) + 3x(-4) + 1(x) + 1(-4)
+
+Step 2: Multiply coefficients and add exponents
+= 2x³ - 8x² + 3x² - 12x + x - 4
+
+Step 3: Combine like terms
+= 2x³ + (-8x² + 3x²) + (-12x + x) - 4
+= 2x³ - 5x² - 11x - 4
+
+Final Result: 2x³ - 5x² - 11x - 4
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="copyright">&copy; 2024 PolySolver | Advanced Polynomial Calculator</p>
+        </div>
+    </footer>
+</body>
+</html>

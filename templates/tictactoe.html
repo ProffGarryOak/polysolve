@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quantum Tic Tac Toe</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" />
+    <style>
+        :root {
+            --quantum-blue: #00f0ff;
+            --neon-purple: #bd00ff;
+            --cyber-green: #00ff9d;
+            --dark-matter: #0a0a12;
+            --void-black: #010104;
+            --hud-white: #f0f0ff;
+            --alert-red: #ff3860;
+            --warning-yellow: #ffdd57;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--void-black);
+            color: var(--hud-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(189, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 240, 255, 0.15) 0%, transparent 50%);
+        }
+
+        /* Cyberpunk Navigation */
+        nav {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 18, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, var(--quantum-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--quantum-blue), var(--neon-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 10px var(--quantum-blue); }
+            100% { transform: scale(1.05); box-shadow: 0 0 20px var(--neon-purple); }
+        }
+
+        .nav-link {
+            color: var(--hud-white);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--quantum-blue), var(--neon-purple));
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 240, 255, 0.5);
+        }
+
+        /* Main Game Container */
+        .game-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 1rem 2rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        /* Game Board */
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 2rem 0;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1/1;
+            position: relative;
+        }
+
+        #game-board::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            border-radius: 16px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .cell {
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            aspect-ratio: 1/1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell:hover {
+            background: rgba(0, 240, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .cell.x::before {
+            content: 'X';
+            color: var(--quantum-blue);
+            text-shadow: 0 0 10px var(--quantum-blue);
+        }
+
+        .cell.o::before {
+            content: 'O';
+            color: var(--neon-purple);
+            text-shadow: 0 0 10px var(--neon-purple);
+        }
+
+        .cell.winner {
+            animation: winnerPulse 1s infinite alternate;
+        }
+
+        @keyframes winnerPulse {
+            0% { transform: scale(1); box-shadow: 0 0 10px currentColor; }
+            100% { transform: scale(1.05); box-shadow: 0 0 20px currentColor; }
+        }
+
+        /* Status Text */
+        #status {
+            margin: 1.5rem 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            min-height: 2rem;
+            color: var(--cyber-green);
+            text-shadow: 0 0 5px var(--cyber-green);
+        }
+
+        /* Reset Button */
+        #reset {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, var(--quantum-blue), var(--neon-purple));
+            color: var(--void-black);
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 240, 255, 0.5);
+        }
+
+        #reset::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                transparent,
+                transparent,
+                transparent,
+                rgba(0, 240, 255, 0.1)
+            );
+            transform: rotate(30deg);
+            transition: all 0.6s ease;
+        }
+
+        #reset:hover::before {
+            transform: rotate(30deg) translate(20%, 20%);
+        }
+
+        /* Game Title */
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--quantum-blue), var(--cyber-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 5rem 1rem 2rem;
+            }
+            
+            #game-board {
+                max-width: 300px;
+            }
+            
+            .cell {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cyberpunk Navigation -->
+    <nav>
+        <div class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L4 7v10l8 5 8-5V7l-8-5zM12 22V12M2 7l10 5M22 7L12 12" />
+                </svg>
+            </div>
+            <span>Quantum Games</span>
+        </div>
+        <a href="/" class="nav-link">Home</a>
+    </nav>
+
+    <!-- Main Game Container -->
+    <div class="game-container">
+        <h1>QUANTUM TIC TAC TOE</h1>
+        <div id="game-board">
+            <div class="cell" data-row="0" data-col="0"></div>
+            <div class="cell" data-row="0" data-col="1"></div>
+            <div class="cell" data-row="0" data-col="2"></div>
+            <div class="cell" data-row="1" data-col="0"></div>
+            <div class="cell" data-row="1" data-col="1"></div>
+            <div class="cell" data-row="1" data-col="2"></div>
+            <div class="cell" data-row="2" data-col="0"></div>
+            <div class="cell" data-row="2" data-col="1"></div>
+            <div class="cell" data-row="2" data-col="2"></div>
+        </div>
+        <div id="status"></div>
+        <button id="reset">QUANTUM RESET</button>
+    </div>
+
+    <script>
+        const cells = document.querySelectorAll(".cell");
+        const statusText = document.getElementById("status");
+        const resetButton = document.getElementById("reset");
+        let board = [
+            ["", "", ""],
+            ["", "", ""],
+            ["", "", ""],
+        ];
+        let currentPlayer = "X";
+        let gameActive = true;
+
+        cells.forEach((cell) => {
+            cell.addEventListener("click", handleCellClick);
+        });
+
+        resetButton.addEventListener("click", resetGame);
+
+        function handleCellClick(event) {
+            const row = event.target.dataset.row;
+            const col = event.target.dataset.col;
+
+            if (board[row][col] !== "" || !gameActive) return;
+
+            board[row][col] = currentPlayer;
+            event.target.classList.add(currentPlayer.toLowerCase());
+
+            if (checkWinner()) {
+                highlightWinningCells();
+                statusText.textContent = `${currentPlayer} QUANTUM VICTORY!`;
+                gameActive = false;
+                return;
+            } else if (isBoardFull()) {
+                statusText.textContent = `QUANTUM STALEMATE!`;
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            if (currentPlayer === "O") {
+                setTimeout(aiMove, 500);
+            }
+        }
+
+        function aiMove() {
+            const bestMove = findBestMove(board);
+            if (bestMove) {
+                board[bestMove.row][bestMove.col] = "O";
+                updateBoard();
+                if (checkWinner()) {
+                    highlightWinningCells();
+                    statusText.textContent = `QUANTUM AI DOMINATES!`;
+                    gameActive = false;
+                } else if (isBoardFull()) {
+                    statusText.textContent = `QUANTUM STALEMATE!`;
+                    gameActive = false;
+                }
+                currentPlayer = "X";
+            }
+        }
+
+        function updateBoard() {
+            cells.forEach((cell) => {
+                const row = cell.dataset.row;
+                const col = cell.dataset.col;
+                cell.className = "cell";
+                if (board[row][col]) {
+                    cell.classList.add(board[row][col].toLowerCase());
+                }
+            });
+        }
+
+        function checkWinner() {
+            const winningCombinations = [
+                [
+                    [0, 0],
+                    [0, 1],
+                    [0, 2],
+                ],
+                [
+                    [1, 0],
+                    [1, 1],
+                    [1, 2],
+                ],
+                [
+                    [2, 0],
+                    [2, 1],
+                    [2, 2],
+                ],
+                [
+                    [0, 0],
+                    [1, 0],
+                    [2, 0],
+                ],
+                [
+                    [0, 1],
+                    [1, 1],
+                    [2, 1],
+                ],
+                [
+                    [0, 2],
+                    [1, 2],
+                    [2, 2],
+                ],
+                [
+                    [0, 0],
+                    [1, 1],
+                    [2, 2],
+                ],
+                [
+                    [0, 2],
+                    [1, 1],
+                    [2, 0],
+                ],
+            ];
+
+            for (const combination of winningCombinations) {
+                const [a, b, c] = combination;
+                if (
+                    board[a[0]][a[1]] &&
+                    board[a[0]][a[1]] === board[b[0]][b[1]] &&
+                    board[a[0]][a[1]] === board[c[0]][c[1]]
+                ) {
+                    return combination;
+                }
+            }
+            return false;
+        }
+
+        function highlightWinningCells() {
+            const winningCombination = checkWinner();
+            if (winningCombination) {
+                winningCombination.forEach(([row, col]) => {
+                    const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                    cell.classList.add("winner");
+                });
+            }
+        }
+
+        function isBoardFull() {
+            return board.every((row) => row.every((cell) => cell !== ""));
+        }
+
+        function resetGame() {
+            board = [
+                ["", "", ""],
+                ["", "", ""],
+                ["", "", ""],
+            ];
+            currentPlayer = "X";
+            gameActive = true;
+            statusText.textContent = "";
+            cells.forEach((cell) => {
+                cell.className = "cell";
+            });
+        }
+
+        function findBestMove(board) {
+            let bestScore = -Infinity;
+            let move;
+
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    if (board[row][col] === "") {
+                        board[row][col] = "O";
+                        let score = minimax(board, 0, false);
+                        board[row][col] = "";
+                        if (score > bestScore) {
+                            bestScore = score;
+                            move = { row, col };
+                        }
+                    }
+                }
+            }
+            return move;
+        }
+
+        function minimax(board, depth, isMaximizing) {
+            if (checkWinner()) {
+                return isMaximizing ? -1 : 1;
+            } else if (isBoardFull()) {
+                return 0;
+            }
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === "") {
+                            board[row][col] = "O";
+                            let score = minimax(board, depth + 1, false);
+                            board[row][col] = "";
+                            bestScore = Math.max(score, bestScore);
+                        }
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === "") {
+                            board[row][col] = "X";
+                            let score = minimax(board, depth + 1, true);
+                            board[row][col] = "";
+                            bestScore = Math.min(score, bestScore);
+                        }
+                    }
+                }
+                return bestScore;
+            }
+        }
+    </script>
+</body>
+</html>

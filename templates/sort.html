@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sorting Visualizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #04162e;
+            --secondary-color: #28a745;
+            --highlight-color: #38b2ac;
+            --text-color: #2d3748;
+            --light-bg: #f7fafc;
+            --dark-bg: #1a202c;
+            --sorted-color: #6b46c1;
+            --compare-color: #38a169;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: 80px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        h1::after {
+            content: "";
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: var(--secondary-color);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        .array-bar {
+            width: 30px;
+            margin: 0 2px;
+            color: white;
+            text-align: center;
+            line-height: 2;
+            transition: all 0.3s ease;
+            min-height: 30px;
+            border-radius: 4px 4px 0 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 50vh;
+            min-height: 300px;
+            margin: 30px 0;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .increase-length {
+            transform: scaleY(1.2);
+            transition: transform 0.3s;
+        }
+
+        .saturation-increase {
+            transition: filter 0.1s;
+            filter: saturate(4);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .controls {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-group h3 {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        select, button {
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select {
+            min-width: 180px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2341567' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px;
+            appearance: none;
+            padding-right: 36px;
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .compare {
+            background-color: var(--compare-color) !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(56, 161, 105, 0.5) !important;
+        }
+
+        .sorted {
+            background-color: var(--sorted-color) !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(107, 70, 193, 0.5) !important;
+        }
+
+        .comparison-container {
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .comparison-result {
+            margin: 10px;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-color);
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        #speed {
+            width: 200px;
+            cursor: pointer;
+        }
+
+        .speed-value {
+            min-width: 60px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        nav {
+            background-color: var(--primary-color);
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav img {
+            height: 50px;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        nav img:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: var(--secondary-color);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .algorithm-info {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .algorithm-info h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .algorithm-info p {
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .info-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: var(--highlight-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            margin-right: 8px;
+            cursor: help;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                padding-top: 70px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            select, button {
+                width: 100%;
+            }
+            
+            .comparison-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .array-container {
+                height: 40vh;
+                padding: 10px;
+            }
+            
+            .array-bar {
+                width: 20px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" />
+            <div class="nav-links">
+                <a href="/">Home</a>
+                
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>Sorting Algorithm Visualizer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3>Single Algorithm Visualization</h3>
+                <select id="algorithm">
+                    <option value="bubble">Bubble Sort</option>
+                    <option value="selection">Selection Sort</option>
+                    <option value="insertion">Insertion Sort</option>
+                    <option value="merge">Merge Sort</option>
+                    <option value="quick">Quick Sort</option>
+                </select>
+                <button onclick="sortArray()">Visualize Sort</button>
+                <button onclick="generateNewArray()">Generate New Array</button>
+            </div>
+            
+            <div class="control-group">
+                <h3>Algorithm Comparison</h3>
+                <select id="algorithm1">
+                    <option value="bubble">Bubble Sort</option>
+                    <option value="selection">Selection Sort</option>
+                    <option value="insertion">Insertion Sort</option>
+                    <option value="merge">Merge Sort</option>
+                    <option value="quick">Quick Sort</option>
+                </select>
+                <select id="algorithm2">
+                    <option value="bubble">Bubble Sort</option>
+                    <option value="selection">Selection Sort</option>
+                    <option value="insertion">Insertion Sort</option>
+                    <option value="merge">Merge Sort</option>
+                    <option value="quick">Quick Sort</option>
+                </select>
+                <button onclick="compareSorts()">Compare Algorithms</button>
+            </div>
+            
+            <div class="speed-control">
+                <label for="speed">Animation Speed: </label>
+                <input type="range" id="speed" min="50" max="2000" value="500" />
+                <span class="speed-value" id="speed-value">500ms</span>
+            </div>
+        </div>
+        
+        <div class="array-container" id="array-container"></div>
+        <div class="comparison-container" id="comparison-container"></div>
+        
+        <div class="algorithm-info" id="algorithm-info" style="display: none;">
+            <h2><span class="info-icon">i</span> About Sorting Algorithms</h2>
+            <p>This visualizer helps you understand how different sorting algorithms work by animating the sorting process. Each algorithm has its own strengths and weaknesses in terms of time complexity and efficiency.</p>
+            <p><strong>Bubble Sort:</strong> Simple but inefficient (O(n²)), works by repeatedly swapping adjacent elements.</p>
+            <p><strong>Selection Sort:</strong> Another O(n²) algorithm that selects the smallest element and swaps it into place.</p>
+            <p><strong>Insertion Sort:</strong> O(n²) in worst case but efficient for small or nearly sorted data.</p>
+            <p><strong>Merge Sort:</strong> Efficient O(n log n) divide-and-conquer algorithm.</p>
+            <p><strong>Quick Sort:</strong> Another O(n log n) algorithm on average, with O(n²) worst case.</p>
+        </div>
+    </div>
+    
+    <script>
+        let currentTimeouts = []; // Track current sorting timeouts
+        let originalArray = []; // Store the original random array for comparison
+        let audioContext = new (window.AudioContext || window.webkitAudioContext)(); // Initialize audio context
+
+        // Initialize the page with a random array
+        window.onload = function() {
+            generateNewArray();
+            
+            // Set up info button toggle
+            document.getElementById('info-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                const infoSection = document.getElementById('algorithm-info');
+                infoSection.style.display = infoSection.style.display === 'none' ? 'block' : 'none';
+            });
+        };
+
+        function generateNewArray() {
+            const array = generateRandomArray();
+            renderArray(array, "array-container");
+            document.getElementById("array-container").style.display = "flex";
+            document.getElementById("comparison-container").innerHTML = "";
+        }
+
+        function generateRandomArray() {
+            const array = [];
+            const size = Math.floor(window.innerWidth / 30); // Dynamic size based on screen width
+            for (let i = 0; i < Math.min(size, 30); i++) { // Limit to 30 elements max
+                array.push(Math.floor(Math.random() * 100) + 1);
+            }
+            originalArray = array.slice(); // Save the original array
+            return array;
+        }
+
+        function clearCurrentVisualization() {
+            currentTimeouts.forEach((timeout) => clearTimeout(timeout)); // Clear all ongoing timeouts
+            currentTimeouts = []; // Reset the timeout tracker
+        }
+
+        function renderArray(array, containerId, compareIndices = [], sortedIndices = []) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+
+            // Calculate available height for bars
+            const containerHeight = container.offsetHeight;
+            const minBarHeight = 30;
+            const maxBarHeight = containerHeight - minBarHeight;
+            const maxValue = Math.max(...array);
+
+            // Render bars
+            array.forEach((num, index) => {
+                const bar = document.createElement("div");
+                bar.className = "array-bar";
+
+                // Calculate height for the bar
+                const barHeight = minBarHeight + (num / maxValue) * maxBarHeight;
+                const hue = (num / maxValue) * 240; // Blue to red spectrum
+
+                bar.style.height = barHeight + "px";
+                bar.style.backgroundColor = `hsl(${hue}, 70%, 60%)`;
+                bar.textContent = num;
+
+                // Add classes based on indices
+                if (compareIndices.includes(index)) {
+                    bar.classList.add("compare");
+                    playRandomPianoNote();
+                }
+
+                if (sortedIndices.includes(index)) {
+                    bar.classList.add("sorted");
+                }
+
+                container.appendChild(bar);
+            });
+        }
+
+        function increaseSaturation(containerId) {
+            const container = document.getElementById(containerId);
+            const bars = Array.from(container.getElementsByClassName("array-bar"));
+
+            // Apply saturation increase from right to left
+            bars.forEach((bar, index) => {
+                setTimeout(() => {
+                    bar.classList.add("saturation-increase");
+                }, 1500 - index * 75);
+            });
+        }
+
+        function visualizeSteps(steps, containerId) {
+            let index = 0;
+            const speed = parseInt(document.getElementById("speed").value, 10);
+            
+            function nextStep() {
+                if (index >= steps.length) {
+                    // Increase saturation after sorting is complete
+                    increaseSaturation(containerId);
+                    return;
+                }
+                const [array, compareIndices, sortedIndices] = steps[index];
+                renderArray(array, containerId, compareIndices, sortedIndices);
+                index++;
+                const timeout = setTimeout(nextStep, speed);
+                currentTimeouts.push(timeout);
+            }
+            nextStep();
+        }
+
+        function sortArray() {
+            clearCurrentVisualization();
+            document.getElementById("array-container").style.display = "flex"; 
+
+            const algorithm = document.getElementById("algorithm").value;
+            const array = originalArray.slice();
+            renderArray(array, "array-container");
+
+            // Send the sorting request to the server
+            fetch("/sort", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ algorithm: algorithm }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    visualizeSteps(data.steps, "array-container");
+                });
+        }
+
+        function compareSorts() {
+            clearCurrentVisualization();
+            document.getElementById("array-container").style.display = "none";
+
+            const algorithm1 = document.getElementById("algorithm1").value;
+            const algorithm2 = document.getElementById("algorithm2").value;
+            const comparisonContainer = document.getElementById("comparison-container");
+            
+            comparisonContainer.innerHTML = `
+                <div class="comparison-result">${algorithm1.replace(/^\w/, c => c.toUpperCase())}</div>
+                <div class="array-container" id="compare-container-1"></div>
+                <div class="array-container" id="compare-container-2"></div>
+                <div class="comparison-result">${algorithm2.replace(/^\w/, c => c.toUpperCase())}</div>
+            `;
+
+            const array1 = originalArray.slice();
+            const array2 = originalArray.slice();
+
+            renderArray(array1, "compare-container-1");
+            renderArray(array2, "compare-container-2");
+
+            // Sort and visualize first algorithm
+            fetch("/sort", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ algorithm: algorithm1 }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    visualizeSteps(data.steps, "compare-container-1");
+                });
+
+            // Sort and visualize second algorithm
+            fetch("/sort", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ algorithm: algorithm2 }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    visualizeSteps(data.steps, "compare-container-2");
+                });
+        }
+
+        function playMelodiousSound() {
+            const notes = [
+                { file: "static/notes/a1.wav", duration: 0.5 },
+                { file: "static/notes/a1s.wav", duration: 0.5 },
+                { file: "static/notes/b1.wav", duration: 0.5 },
+                { file: "static/notes/c1.wav", duration: 0.5 },
+                { file: "static/notes/c1s.wav", duration: 0.5 },
+                { file: "static/notes/d1.wav", duration: 0.5 },
+                { file: "static/notes/d1s.wav", duration: 0.5 },
+                { file: "static/notes/e1.wav", duration: 0.5 },
+                { file: "static/notes/f1.wav", duration: 0.5 },
+                { file: "static/notes/f1s.wav", duration: 0.5 },
+                { file: "static/notes/g1.wav", duration: 0.5 },
+                { file: "static/notes/g1s.wav", duration: 0.5 },
+            ];
+
+            const randomNote = notes[Math.floor(Math.random() * notes.length)];
+            const audio = new Audio(randomNote.file);
+            audio.play().catch((error) => {
+                console.error("Error playing sound:", error);
+            });
+        }
+
+        function playRandomPianoNote() {
+            playMelodiousSound();
+        }
+
+        // Speed control event listener
+        document.getElementById("speed").addEventListener("input", function() {
+            const speedValue = document.getElementById("speed-value");
+            speedValue.textContent = this.value + "ms";
+            
+            // Update color based on speed
+            const percent = (this.value - this.min) / (this.max - this.min);
+            const hue = 120 - (percent * 120); // Green (120) to Red (0)
+            speedValue.style.color = `hsl(${hue}, 80%, 45%)`;
+        });
+    </script>
+</body>
+</html>
